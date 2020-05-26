@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: probot_description
+    relative_path: urdf/PROBOT_G602/probot_g602.xacro
+    xacro_args: "--inorder "
+  SRDF:
+    relative_path: config/probot_g602.srdf
+  CONFIG:
+    author_name: Hu Chunxu
+    author_email: huchunxu@ps-micro.com
+    generated_timestamp: 1583245759
