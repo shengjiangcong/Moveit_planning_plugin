@@ -60,7 +60,7 @@ bool LERPInterface::solve(const planning_scene::PlanningSceneConstPtr& planning_
                           moveit_msgs::MotionPlanDetailedResponse& res)
 {
   // Load the planner-specific parameters
-  nh_.getParam("num_steps", num_steps_);
+  nh_.getParam("num_steps", num_steps_);//配置文件中的步长40
 
   ros::WallTime start_time = ros::WallTime::now();
   robot_model::RobotModelConstPtr robot_model = planning_scene->getRobotModel();
@@ -71,6 +71,7 @@ bool LERPInterface::solve(const planning_scene::PlanningSceneConstPtr& planning_
   dof_ = joint_names.size();
   std::vector<double> start_joint_values;
   start_state->copyJointGroupPositions(joint_model_group, start_joint_values);
+  //ROS_INFO("start_joint_degrees:%f,%f,%f,%f,%f,%f",start_joint_values[0],start_joint_values[1],start_joint_values[2],start_joint_values[3],start_joint_values[4],start_joint_values[5]);//规划初始六轴角度
 
   // This planner only supports one goal constriant in the request
   std::vector<moveit_msgs::Constraints> goal_constraints = req.goal_constraints;
@@ -81,7 +82,7 @@ bool LERPInterface::solve(const planning_scene::PlanningSceneConstPtr& planning_
   {
     goal_joint_values.push_back(constraint.position);
   }
-
+//ROS_INFO("goal_joint_degrees:%f,%f,%f,%f,%f,%f",goal_joint_values[0],goal_joint_values[1],goal_joint_values[2],goal_joint_values[3],goal_joint_values[4],goal_joint_values[5]);//规划终点六轴角度
   // ==================== Interpolation
   trajectory_msgs::JointTrajectory joint_trajectory;
   interpolate(joint_names, start_state, joint_model_group, start_joint_values, goal_joint_values, joint_trajectory);
@@ -129,6 +130,7 @@ void LERPInterface::interpolate(const std::vector<std::string> joint_names, robo
 
     joint_trajectory.joint_names = joint_names;
     joint_trajectory.points[step].positions = joint_values;
+//ROS_INFO("trajectory[%d]:%f",step,joint_trajectory.points[step].positions[1]);//轴1的轨迹
   }
 }
 
