@@ -132,6 +132,7 @@ add_library(${PROJECT_NAME}
   src/lerp_interface.cpp
   src/lerp_planning_context.cpp
   src/lerp_planner_manager.cpp
+  src/Quintic_Spline.cpp
 )
 
 ## Add cmake target dependencies of the library
