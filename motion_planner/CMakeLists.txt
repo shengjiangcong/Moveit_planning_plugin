@@ -133,6 +133,8 @@ add_library(${PROJECT_NAME}
   src/lerp_planning_context.cpp
   src/lerp_planner_manager.cpp
   src/Quintic_Spline.cpp
+  src/robcprobot_matrix.c
+  src/robcprobot_arm6DOFik.c
 )
 
 ## Add cmake target dependencies of the library
