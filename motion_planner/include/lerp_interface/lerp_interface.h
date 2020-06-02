@@ -44,6 +44,26 @@ namespace lerp_interface
 {
 MOVEIT_CLASS_FORWARD(LERPInterface);
 
+typedef struct
+{
+ float pos_x;
+ float pos_y;
+ float pos_z;
+ float pos_row;
+ float pos_pitch;
+ float pos_yaw;
+}Pos;
+
+typedef struct
+{
+ float joint0;
+ float joint1;
+ float joint2;
+ float joint3;
+ float joint4;
+ float joint5;
+}Joint;
+
 class LERPInterface
 {
 public:
@@ -65,6 +85,10 @@ private:
   void Quintic(const std::vector<std::string> joint_names, robot_state::RobotStatePtr& robot_state,
                    const robot_state::JointModelGroup* joint_model_group, const std::vector<double>& start_joint_vals,
                    const std::vector<double>& goal_joint_vals, trajectory_msgs::JointTrajectory& joint_trajectory);
+  
+  void initialize();
+  Pos getPositionFK(float joint[6]);
+  Joint getPositionIK(float pos[6], float seed[6]);
 
 };
 }

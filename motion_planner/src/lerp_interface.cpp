@@ -49,6 +49,8 @@
 
 #include "lerp_interface/lerp_interface.h"
 #include "lerp_interface/Quintic_Spline.h"
+#include "kinematics/robcprobot_arm6DOFik.h"
+#define PI 3.141592653
 
 namespace lerp_interface
 {
@@ -206,5 +208,91 @@ void LERPInterface::Quintic(const std::vector<std::string> joint_names, robot_st
     joint_trajectory.points[step].positions = joint_values;
 //ROS_INFO("trajectory[%d]:%f",step,joint_trajectory.points[step].positions[1]);//轴1的轨迹
   }
+initialize();
+/*float gg[6] = {1.42314,0.91926,1.01491,1.61268,2.65534,-0.125838};
+  Pos position = getPositionFK(gg);
+printf("x:%f\n",position.pos_x);
+printf("x:%f\n",position.pos_y);
+printf("x:%f\n",position.pos_z);
+printf("x:%f\n",position.pos_row);
+printf("x:%f\n",position.pos_pitch);
+printf("x:%f\n",position.pos_yaw);
+float seed[6] = { 1.42314,0.91926,1.01491,1.61268,2.65534,-0.125838};
+float posdest[6] = { 16,-345,783,0.27,1.03,0.50 };
+  Joint joint = getPositionIK(posdest,seed);
+printf("j0:%f\n",joint.joint0);
+printf("j0:%f\n",joint.joint1);
+printf("j0:%f\n",joint.joint2);
+printf("j0:%f\n",joint.joint3);
+printf("j0:%f\n",joint.joint4);
+printf("j0:%f\n",joint.joint5);*/
+}
+
+void LERPInterface::initialize()
+{
+     bool jointHasLimits_ = true;
+     double jointMinLimits_ = 0;
+     double jointMaxLimits_ = 0;
+
+     float alength[6] = { 0,260.33,25.03 , 0, 0, 0 };
+     float alpha[6] = { (float)PI / 2, 0, (float)PI / 2, -(float)PI / 2, (float)PI / 2, 0 };
+     float dlength[6] = { 339, 0, 0, 278.99, 0, 76.49 };
+     float theta0[6] = { 0, 0, 0, 0, 0, 0 };
+     float angleOffset[6] = { 0, 0, -(float)PI / 2, 0, -(float)PI / 2, 0 };
+     float highlim[6] = { (float)PI, (float)PI, (float)PI, (float)PI, (float)PI, (float)PI };
+     float lowlim[6] = { (float)-PI, (float)-PI, (float)-PI, (float)-PI, (float)-PI, (float)-PI };
+     float JointWeight[6] = { 1, .6, .6, .3, .3, .3 };
+
+     robc_ARM6DOF_set_geometry(alength, alpha, dlength, theta0);
+     robc_ARM6DOF_set_angleoffset(angleOffset);
+     robc_ARM6DOF_set_movelim(highlim, lowlim);
+     robc_ARM6DOF_set_modle(0);
+     robc_ARM6DOF_set_jointweight(JointWeight);
+}
+
+Pos LERPInterface::getPositionFK(float joint[6])//joint是当前六轴角度，返回当前位姿
+{
+    float posval[6] = { 0 };
+    Pos posdest;
+
+    robc_ARM6DOF_Anno_kicalc(joint);
+
+    robc_ARM6DOF_updata_posval(posval);
+    posdest.pos_x = posval[0];
+    posdest.pos_y = posval[1];
+    posdest.pos_z = posval[2];
+    posdest.pos_row = posval[3];
+    posdest.pos_pitch = posval[4];
+    posdest.pos_yaw = posval[5];
+
+    return posdest; 
+}
+
+Joint LERPInterface::getPositionIK(float pos[6], float seed[6])//pos是目标位姿，seed是当前六轴角度，返回目标六轴角度
+{
+	float JointValu[6] = { 0 };//关节当前位置
+	float Jointdest[6] = { 0 };//关节目标位置弧度
+
+        Joint jointdest;
+
+	for (unsigned int i = 0; i<6; i++)
+		JointValu[i] = seed[i];
+	robc_ARM6DOF_set_jointval(JointValu);//设置机器人当前关节角
+	robc_ARM6DOF_set_modle(0);//设置冗余解选择方法；0自动，1-8解
+
+	if (robc_ARM6DOF_Anno_ikcalc(pos) == -1)
+	{
+		printf("NO_SOLUTION\n");
+	}
+	robc_ARM6DOF_updata_jointval(Jointdest);//读取解算关节角
+
+        jointdest.joint0 = Jointdest[0];
+        jointdest.joint1 = Jointdest[1];
+        jointdest.joint2 = Jointdest[2];
+        jointdest.joint3 = Jointdest[3];
+        jointdest.joint4 = Jointdest[4];
+        jointdest.joint5 = Jointdest[5];
+
+        return jointdest;
 }
 }  // namespace lerp_interface
