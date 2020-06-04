@@ -72,6 +72,10 @@ public:
   bool solve(const planning_scene::PlanningSceneConstPtr& planning_scene,
              const planning_interface::MotionPlanRequest& req, moveit_msgs::MotionPlanDetailedResponse& res);
 
+  void initialize();
+  Pos getPositionFK(float joint[6]);
+  Joint getPositionIK(float pos[6], float seed[6]);
+
 protected:
   ros::NodeHandle nh_;
   std::string name_;
@@ -86,9 +90,6 @@ private:
                    const robot_state::JointModelGroup* joint_model_group, const std::vector<double>& start_joint_vals,
                    const std::vector<double>& goal_joint_vals, trajectory_msgs::JointTrajectory& joint_trajectory);
   
-  void initialize();
-  Pos getPositionFK(float joint[6]);
-  Joint getPositionIK(float pos[6], float seed[6]);
 
 };
 }

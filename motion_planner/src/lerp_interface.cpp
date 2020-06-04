@@ -142,7 +142,7 @@ void LERPInterface::Quintic(const std::vector<std::string> joint_names, robot_st
                                 trajectory_msgs::JointTrajectory& joint_trajectory)
 {
   joint_trajectory.points.resize(num_steps_);
-        int time = 4;//单位s
+        int time = 10;//单位s
 	float trajpoints_j0[500][4] = { 0 };//最多支持500个点
 	float trajpoints_j1[500][4] = { 0 };//最多支持500个点
 	float trajpoints_j2[500][4] = { 0 };//最多支持500个点
@@ -150,17 +150,15 @@ void LERPInterface::Quintic(const std::vector<std::string> joint_names, robot_st
 	float trajpoints_j4[500][4] = { 0 };//最多支持500个点
 	float trajpoints_j5[500][4] = { 0 };//最多支持500个点
 	bool Traj_Quintic_manypoints;
-	float degree_array[4] = { 0,0 ,0,0};//单位°
-	float velocity_array[4] = { 0,0,0,0};//单位°/s
-	float acceleration_array[4] = { 0,0 ,0,0};
+	float degree_array[2] = { 0,0};//单位°
+	float velocity_array[2] = { 0,0};//单位°/s
+	float acceleration_array[2] = { 0,0};
 	unsigned long long array_num = sizeof(degree_array) / sizeof(float);//轨迹点的个数
 
   for (int joint_index = 0; joint_index < dof_; ++joint_index)
   {
         degree_array[0] = start_joint_vals[joint_index];
-	degree_array[1] = 0;
-	degree_array[2] = 0;
-	degree_array[3] = goal_joint_vals[joint_index];
+	degree_array[1] = goal_joint_vals[joint_index];
 	QuinticSpline traj;
         if(joint_index == 0)
 	Traj_Quintic_manypoints = traj.getTraj_Quintic_manypoints(time, degree_array, velocity_array, acceleration_array, *trajpoints_j0, array_num);

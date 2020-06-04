@@ -135,6 +135,7 @@ add_library(${PROJECT_NAME}
   src/Quintic_Spline.cpp
   src/robcprobot_matrix.c
   src/robcprobot_arm6DOFik.c
+  src/moveit_demo.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -171,6 +172,11 @@ target_link_libraries(lerp_example
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
+
+add_executable(moveit_demo src/moveit_demo.cpp)
+target_link_libraries(moveit_demo ${PROJECT_NAME}   ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES})
+
 
 # Lerp planning plugin
 add_library(c800_lerp_planner_plugin src/lerp_planner_manager.cpp)

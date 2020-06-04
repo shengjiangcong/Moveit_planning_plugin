@@ -23,6 +23,26 @@ extern "C"{
 
 #include "stdint.h"
 
+typedef struct
+{
+ float pos_x;
+ float pos_y;
+ float pos_z;
+ float pos_row;
+ float pos_pitch;
+ float pos_yaw;
+}Pos;
+
+typedef struct
+{
+ float joint0;
+ float joint1;
+ float joint2;
+ float joint3;
+ float joint4;
+ float joint5;
+}Joint;
+
  /**
  * \brief       设置ARM6DOF几何参数
  *
@@ -141,7 +161,9 @@ int16_t robc_ARM6DOF_C800_kicalc(float JointVal[6]);
 */
 double revert_degree_betweenPI(double joint_degree);
 /** @} */
-
+void initialize();
+Pos getPositionFK(float joint[6]);
+Joint getPositionIK(float pos[6], float seed[6]);
 #ifdef __cplusplus
 };
 #endif
